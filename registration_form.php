@@ -1,4 +1,60 @@
+<?php
+define('REQUIRED_FIELD_ERROR', 'This field is required');
 
+$errors=[];
+
+
+$username='';
+$email='';
+$password='';
+$password_confirm='';
+$cv_url='';
+
+if($_SERVER['REQUEST_METHOD']==="POST"){
+
+    $username=post_data('username');
+    $email=post_data('email');
+    $password=post_data('password');
+    $password_confirm=post_data('password_confirm');
+    $cv_url=post_data('cv_url');
+
+    if(!$username){
+        $errors['username']=REQUIRED_FIELD_ERROR;
+    }else if(!strlen($username) > 6  && strlen($username) < 16){
+        $errors['username']='Username must be between 6 and 16 characters';
+    }
+    if(!$email){
+        $errors['email']=REQUIRED_FIELD_ERROR;
+    }else if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
+        $errors['email']='This field must be a valid email address';
+
+    }
+    if(!$password){
+        $errors['password']=REQUIRED_FIELD_ERROR;
+    }
+    if(!$password_confirm){
+        $errors['password_confirm']=REQUIRED_FIELD_ERROR;
+    }
+    if($password && $password_confirm && strcmp($password,$password_confirm) !==0){
+        $errors['password']='This must match password field';
+    }
+
+    if($cv_url && !filter_var($cv_url, FILTER_VALIDATE_URL)){
+        $errors['cv_url']='Please provide a valid link';
+    }
+
+    if(empty($errors)){
+        echo "Everything is good"."<br>";
+    }
+}
+function post_data($field)
+{
+    $_POST[$field] ??= '';
+
+    return htmlspecialchars(stripcslashes($_POST[$field]));
+}
+
+?>
 
 <!doctype html>
 <html lang="en">
